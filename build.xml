@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="build">
+
+<!-- APPLICATION METADATA -->
+<property name="mdpc.name"      value="mdvl-ma-sitecopy"/>
+<property name="mdpc.section"   value="net"/>
+<property name="mdpc.arch"      value="all"/>
+<property name="mdpc.descrs"    value="SiteCopy Low-Level Wrapper Script"/>
+<property name="mdpc.cpyear"    value="2014, 2020"/>
+<property name="mdpc.conflicts" value="mdvl-d5man"/>
+<property name="mdpc.descrl">
+ Provides a script around the `sitecopy` command which takes parameters
+ instead of configuration files.
+</property>
+
+<property name="mdpc.file.install">
+ma_sitecopy /usr/bin
+</property>
+
+<!-- CI INTEGRATION -->
+<target name="package_triggered" depends="package">
+	<property name="masysma.ci.trigger" value="newver"/>
+</target>
+
+<!-- CONSTANT TPL IMPORT -->
+<property environment="env"/>
+<condition property="masysma.internal.includepath.rel" value="${env.MDVL_CI_PHOENIX_ROOT}" else=".."><isset property="env.MDVL_CI_PHOENIX_ROOT"/></condition>
+<property name="masysma.internal.includepath" location="${masysma.internal.includepath.rel}"/>
+<property name="masysma.internal.loadpath" value="${masysma.internal.includepath}/co-build/ant-build-template.xml"/>
+<condition property="masysma.internal.load" value="file://${masysma.internal.loadpath}" else="https://raw.githubusercontent.com/m7a/co-build/master/ant-build-template.xml"><resourceexists><file file="${masysma.internal.loadpath}"/></resourceexists></condition>
+<import><url url="${masysma.internal.load}"/></import>
+
+</project>

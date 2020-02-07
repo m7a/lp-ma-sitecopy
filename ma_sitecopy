@@ -1,0 +1,112 @@
+#!/bin/sh -e
+#==========================================================================
+# SiteCopy Low-Level Wrapper Script 1.0.0.1, Copyright (c) 2014 Ma_Sys.ma.
+# For further info send an e-mail to Ma_Sys.ma@web.de.
+#==========================================================================
+
+ma_sitecopy_help() {
+	cat <<EOF
+USAGE $(basename "$0") -mu USER -ms SERVER -md DIR [-mr REMOTE-DIR] [-mt STATE]
+							[-so "K V"] [--] [SCO]
+
+-mu USER        login username
+-ms SERVER      server address
+-md DIR         local source directory
+-mr REMOTE-DIR  remote destination directory
+-mt STATE       local state file
+-so K V         any number of site rcfile options
+--              marks end of options for this wrapper script
+SCO             any number and format of direct sitecopy-options
+EOF
+}
+
+head -n 5 "$0" | tail -n 4 | cut -c 2-
+echo
+if [ $# = 0 -o "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+	ma_sitecopy_help
+	exit
+fi
+
+user=
+server=
+local=
+password=
+so=
+remote=.
+sitename="ma_sitecopy_$$"
+fail=0
+localstate="$HOME/.sitecopy/$sitename"
+statefile=
+
+while [ $# != 0 -a "$1" != "--" ]; do
+	case "$1" in
+	(-mu) user="$2";      shift;;
+	(-ms) server="$2";    shift;;
+	(-md) local="$2";     shift;;
+	(-mr) remote="$2";    shift;;
+	(-mt) statefile="$2"; shift;;
+	(-so) so="$so
+	$2"; shift;;
+	(*) echo "Unknown option: $1" 1>&2; exit 1;;
+	esac
+	shift
+done
+
+[ $# = 0 ] || shift
+
+if [ -z "$user" -o -z "$server" -o -z "$local" ]; then
+	echo Error: incomplete arguments 1>&2
+	echo
+	ma_sitecopy_help
+	exit 1
+fi
+
+printf "Enter password [q: abort] ";
+stty -echo || echo Stty failed / Password might be echoed
+read -r password || { stty echo || echo; exit $?; }
+stty echo || echo Stty failed / try stty echo after invocation
+echo
+
+[ "$password" != q ] || exit 0
+
+rcfile="/tmp/$sitename.txt"
+: > "$rcfile"
+chmod 600 "$rcfile"
+cat > "$rcfile" <<EOF
+# Automatically generated rcfile. You should not normally edit this unless you
+# want to use this as a basis for your own configuration files.
+# This file has been created by the following script:
+
+$(head -n 5 "$0" | tail -n 4)
+
+site $sitename
+	server $server
+	remote ~/$remote
+	local $local
+	username $user
+	password $password $so
+EOF
+if [ ! -d "$HOME/.sitecopy" ]; then
+	mkdir "$HOME/.sitecopy"
+	chmod 0700 "$HOME/.sitecopy"
+fi
+
+if [ -f "$localstate" ]; then
+	echo "Error: Sitecopy state already exists in $localstate" 1>&2
+	exit 1
+fi
+
+[ -n "$statefile" ] || statefile="$local/sitecopy_state.xml"
+
+[ ! -f "$statefile" ] || cp "$statefile" "$localstate"
+
+if [ $# = 0 ]; then
+	sitecopy -r "$rcfile" -u "$sitename" || fail=$?
+else
+	sitecopy -r "$rcfile" "$@" "$sitename" || fail=$?
+fi
+
+rm "$rcfile"
+
+[ ! -f "$localstate" ] || mv "$localstate" "$statefile"
+exit $fail

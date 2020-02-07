@@ -1,0 +1,5 @@
+mdvl-ma-sitecopy (1.0.0) stable; urgency=medium
+
+  * Package created with MDPC 2
+
+ -- Linux-Fan, Ma_Sys.ma <Ma_Sys.ma@web.de>  Fri, 07 Feb 2020 21:55:33 +0100
