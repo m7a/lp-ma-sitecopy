@@ -7,6 +7,7 @@
 <property name="mdpc.arch"      value="all"/>
 <property name="mdpc.descrs"    value="SiteCopy Low-Level Wrapper Script"/>
 <property name="mdpc.cpyear"    value="2014, 2020"/>
+<property name="mdpc.depends"   value="sitecopy"/>
 <property name="mdpc.conflicts" value="mdvl-d5man"/>
 <property name="mdpc.descrl">
  Provides a script around the `sitecopy` command which takes parameters
