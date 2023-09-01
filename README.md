@@ -8,7 +8,7 @@ author: ["Linux-Fan, Ma_Sys.ma (Ma_Sys.ma@web.de)"]
 keywords: ["scripts", "d5man", "sitecopy", "linux", "ftp"]
 x-masysma-version: 1.0.0
 x-masysma-repository: https://www.github.com/m7a/lp-ma-sitecopy
-x-masysma-website: https://masysma.lima-city.de/11/ma_sitecopy.xhtml
+x-masysma-website: https://masysma.net/11/ma_sitecopy.xhtml
 x-masysma-owned: 1
 x-masysma-copyright: |
   Copyright (c) 2014, 2020 Ma_Sys.ma.
